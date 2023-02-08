@@ -1,0 +1,85 @@
+// have an ai write a script that parses this file to generate svelte components (with pug and sass)
+
+// ========>-{  KEY  }-<=======
+// 
+// ITEMS
+// used at the start of a line
+//  - nested components
+//  + static text/media
+//  > links and buttons
+//  = text input fields
+// 
+// ITEM MODIFIERS
+// used directly after items
+//  < zero or many
+//  ? optional 
+// 
+// SPECIAL
+// separates items in a line
+//  | or (state dependent)
+//
+// ============================
+
+/home
+- header
+- sitters
+- footer
+
+header
+- brand
+- nav
+
+brand
++ name
++ tagline
+
+nav
+> schedule
+> support
+> sign up | sign in | sign out
+
+sitters
+-< sitter
+
+sitter
++ photo
++ name
+- rating
++ is within range
++ total jobs completed
++ total hours worked
++ has availability
+
+footer
++ copyright
++ llc
+
+/sitter/<name>
+- sitter
+- availability
+-< job (history)
+
+job
+- parent
+- rating (provided)
++ review
+- time slot
+
+rating
++< star
++? half star
+
+parent
+- photo
+- name
+- rating
+- description
+
+availability
+= day range
+= time range
+-< time slot
+
+time slot
++ start time
++ duration
