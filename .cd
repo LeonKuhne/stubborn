@@ -1,8 +1,18 @@
 #!/bin/bash
 title "Orlando Babysitters"
 debug "aka. Passive Income"
+help .cd | indent
 
 function run() {
   watch -g plantuml state.puml
 }
 
+function save() {
+  if [ -z "$1" ]; then
+    err "Usage: save \"did something neat>\""
+    return; 
+  fi
+  git add .
+  git commit -m "\"$@\""
+  git push
+}
