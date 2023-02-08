@@ -1,0 +1,9 @@
+@startuml
+
+[*] --> signup
+signup --> usecase
+usecase: add use types
+usecase: more
+
+@enduml
+

@@ -1,0 +1,8 @@
+#!/bin/bash
+title "Orlando Babysitters"
+debug "aka. Passive Income"
+
+function run() {
+  watch -g plantuml state.puml
+}
+
