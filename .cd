@@ -4,11 +4,11 @@ debug "aka. Passive Income"
 help .cd | indent
 
 function model() {
-  plantuml state.puml
+  (cd model; plantuml state.puml)
 }
 
 function listen() {
-  watch -n 1 plantuml *.puml
+  (cd model; watch -n 1 plantuml *.puml)
 }
 
 function save() {
