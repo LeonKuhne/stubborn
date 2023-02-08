@@ -1,0 +1,76 @@
+@startuml
+class User {
++id: int
++username: string
++email: string
++phone_number: string
++address: string
++user_type: UserType
++background_check_status: BackgroundCheckStatus
+}
+
+class Babysitter extends User {
++radius: int
++availability: Availability
++rating: float
++reviews: List<Review>
+}
+
+class Parent extends User {
++payment_method: PaymentMethod
++appointments: List<Appointment>
+}
+
+class Appointment {
++id: int
++babysitter: Babysitter
++parent: Parent
++start_time: Date
++end_time: Date
++price: float
++status: AppointmentStatus
+}
+
+class Review {
++id: int
++babysitter: Babysitter
++parent: Parent
++rating: int
++description: string
+}
+
+enum UserType {
+Babysitter
+Parent
+}
+
+enum BackgroundCheckStatus {
+Pending
+Approved
+Rejected
+}
+
+enum Availability {
+Available
+Unavailable
+}
+
+enum PaymentMethod {
+CreditCard
+Venmo
+PayPal
+}
+
+enum AppointmentStatus {
+Scheduled
+Confirmed
+Completed
+}
+
+User o-- Babysitter
+User o-- Parent
+Parent o-- Appointment
+Appointment o-- Babysitter
+Babysitter o-- Review
+Parent o-- Review
+@enduml

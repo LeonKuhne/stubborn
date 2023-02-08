@@ -3,8 +3,12 @@ title "Orlando Babysitters"
 debug "aka. Passive Income"
 help .cd | indent
 
-function run() {
-  watch -g plantuml state.puml
+function model() {
+  plantuml state.puml
+}
+
+function listen() {
+  watch -n 1 plantuml *.puml
 }
 
 function save() {
