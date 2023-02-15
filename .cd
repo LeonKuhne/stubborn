@@ -20,3 +20,12 @@ function save() {
   git commit -m "\"$@\""
   git push
 }
+
+function stub() {
+  . scripts/stub.sh
+}
+
+function test-stub() {
+  rm -rf test
+  stub model/site.stub test
+}
