@@ -4,7 +4,7 @@ Scafold a projects routes and components and stub with basic features.
 
 ### input
 - text site map
-![example](./models/orbb/site.stub)
+- ![example](./models/orbb/site.stub)
 
 ### output
 - working project
