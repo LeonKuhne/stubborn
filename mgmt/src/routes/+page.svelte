@@ -4,7 +4,7 @@
 <template lang="pug">
 .app 
   .debug routes/+page.svelte
-  p HelloWorld
+  p HelloLove
 </template>
 
 <style lang="stylus">
