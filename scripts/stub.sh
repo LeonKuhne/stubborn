@@ -15,7 +15,9 @@ function stub-run() {
   stub-setup
   stub-file
   stub-install
-  stub-start
+  stub-build
+
+  notice "done!"
 }
 
 #
@@ -95,9 +97,9 @@ function stub-install() {
   )
 }
 
-function stub-start() {
-  tell "starting the app"
-  (cd $PROJECT; npm run dev -- --open)
+function stub-build() {
+  tell "building the app"
+  (cd $PROJECT; npm run build)
 }
 
 #

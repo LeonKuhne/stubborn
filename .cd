@@ -7,8 +7,16 @@ function stub() {
   . scripts/stub.sh
 }
 
+function visit() {
+  if [ -z "$1" ]; then
+    err "usage: visit <project-dir>"; return
+  fi
+  (cd $1; npm run preview)
+}
+
 function run() {
   stub "model/$1/site.stub" test
+  visit
 }
 
 function test() {
