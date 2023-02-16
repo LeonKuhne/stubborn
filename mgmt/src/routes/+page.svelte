@@ -1,11 +1,9 @@
 <script>
-  export const prerender = true
 </script>
 
 <template lang="pug">
 .app 
   .debug routes/+page.svelte
-  p HelloWorlds
 </template>
 
 <style lang="stylus">
