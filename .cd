@@ -7,14 +7,8 @@ function stub() {
   . scripts/stub.sh
 }
 
-function listen() {
-  file="models/$1/site.stub"
-  if [ -z "$1" ]; then
-    err "usage: listen <model-name>"; return
-  elif [ ! -f "$file" ]; then
-    err "stub file not found: $file"; return
-  fi
-  watch --color -n 1 "echo $(zsh ~/.zshrc && . ./scripts/stub.sh model/$1/site.stub test)"
+function run() {
+  stub "model/$1/site.stub" test
 }
 
 function test() {
@@ -24,4 +18,19 @@ function test() {
 function retest() {
   rm -rf test
   stub model/orbb/site.stub test
+}
+
+function listen() {
+  file="models/$1/site.stub"
+  if [ -z "$1" ]; then
+    err "usage: listen <model-name>"; return
+  elif [ ! -f "$file" ]; then
+    err "stub file not found: $file"; return
+  fi
+  #fswatch -o $file -l 1 | run "$1"
+  #fswatch -o $file | xargs -n1 -I{} zsh -c '. scripts/stub.sh'
+  fswatch -o models/"$1"/site.stub | xargs -n1 -I{} zsh -c 'source $HOME/.zshrc; if [ -e models/"'$1'"/site.stub ]; then scripts/stub.sh; fi' -- "$1"
+
+
+
 }
