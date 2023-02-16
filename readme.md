@@ -2,11 +2,11 @@
 From site maps to websites in seconds.
 Scafold a projects routes and components and stub with basic features.
 
-### Default Stack
-- svelte
-- pug
-- stylus
+### output
+- svelte, pug, stylus
 
-### Notes
+### notes
 - for use in my other projects
 - see examples in ./models
+
+``` models/orbb/site.stub
