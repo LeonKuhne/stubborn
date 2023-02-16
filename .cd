@@ -1,6 +1,6 @@
 #!/bin/bash
-title "Website Generator"
-debug "from site maps to websites"
+title "stubborn"
+debug "website generator"
 help .cd | indent
 
 function model() {
