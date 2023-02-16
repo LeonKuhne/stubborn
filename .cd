@@ -28,5 +28,5 @@ function listen() {
     err "stub file not found: $file"; return
   fi
   #fswatch -o models/"$1"/site.stub | xargs -n1 -I{} zsh -c '. "$HOME/.zshrc"; if [ -e models/"'$1'"/site.stub ]; then . ./scripts/stub.sh; fi' -- "$1"
-  loop ./scripts/stub.sh "models/$1/site.stub"
+  loop ./scripts/stub.sh "$file" "$file" "$1"
 }
