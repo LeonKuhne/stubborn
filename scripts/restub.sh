@@ -6,4 +6,5 @@ if [ -d "$projectName" ]; then
   rm -rf "$projectName"
 fi
 
-. ./stub.sh "$stubFile" "$projectName"
+echo "dir: $0"
+. "$0/stub.sh" "$stubFile" "$projectName"
