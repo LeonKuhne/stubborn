@@ -27,11 +27,13 @@ function rerun() {
 
 function test() {
   stub models/orbb/site.stub test
+  rm -rf example
+  cp -r test/build example
 }
 
 function retest() {
   rm -rf test
-  stub models/orbb/site.stub test
+  test
 }
 
 function listen() {

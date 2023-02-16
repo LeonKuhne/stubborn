@@ -4,7 +4,7 @@ Scafold a projects routes and components and stub with basic features.
 
 ### input
 - text site map
-- ![baby sitter example](./models/orbb/site.stub)
+- ![babysitter example](./models/orbb/site.stub)
 - ![management system example](./models/mgmt/site.stub)
 
 ### output
