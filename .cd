@@ -37,3 +37,17 @@ function listen() {
   fi
   loop ./scripts/stub.sh "$file" "$file" "$1"
 }
+
+
+function relisten() {
+  file="models/$1/site.stub"
+  if [ -z "$1" ]; then
+    err "usage: listen <model-name>"; return
+  elif [ ! -f "$file" ]; then
+    err "stub file not found: $file"; return
+  fi
+  if [ -d "$1" ]; then
+    rm -rf "$1"
+  fi
+  loop ./scripts/stub.sh "$file" "$file" "$1"
+}
