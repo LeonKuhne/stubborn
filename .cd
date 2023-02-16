@@ -46,8 +46,5 @@ function relisten() {
   elif [ ! -f "$file" ]; then
     err "stub file not found: $file"; return
   fi
-  if [ -d "$1" ]; then
-    rm -rf "$1"
-  fi
-  loop ./scripts/stub.sh "$file" "$file" "$1"
+  loop ./scripts/restub.sh "$file" "$file" "$1"
 }
