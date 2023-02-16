@@ -14,7 +14,7 @@ hire: background check sitter
 hire: add to sitter list
 hire --> [*]
 ' request sitter
-details --> request
+details --> request : parent
 request: notify available sitters
 request --> job
 job: parent

@@ -30,8 +30,6 @@ function verify() {
     echo "usage: stub <file.stub> <output directory>"
   elif [ ! -f $1 ]; then
     echo "stub file not found"
-  elif [ -d $2 ]; then
-    echo "output directory already exists"
   fi
 }
 
@@ -58,6 +56,11 @@ function stub-verify () {
 
 
 function stub-setup() {
+  # skip if project exists
+  if [ -d $PROJECT ]; then
+    fail "project already exists: $PROJECT"
+    return
+  fi
   tell "scafolding ./$PROJECT"
   npm init @svelte-add/kit@latest $PROJECT -- --demos false
 
@@ -71,10 +74,16 @@ function stub-setup() {
     alias: {\n\
       \$components: path.resolve('/src/components'),\n\
     },!" $PROJECT/svelte.config.js
+
+  tell "creating components directory"
+  mkdir $PROJECT/src/components
+
+  rm $PROJECT/src/routes/+page.svelte
+
 }
 
 function stub-install() {
-  tell "initializing project and installing dependencies"
+  tell "installing dependencies"
   (
     cd $PROJECT;
     npm install --save-dev -y svelte-preprocess pug sass
@@ -116,29 +125,6 @@ function template() {
 EOF
 }
 
-function nav() {
-  cat << EOF
-<script>
-  let options = [
-    { name: "root", href: "/" },
-  ]
-</script>
-
-<template lang="pug">
-  nav
-    ul
-      +each('options as option')
-        li
-          a(href="{option.href}") {option.name}
-  slot
-</template>
-
-<style lang="sass">
-
-</style>
-EOF
-}
-
 #
 # COMMAND PARSERS
 # 
@@ -149,7 +135,8 @@ EOF
 # items
 #  - nested components
 #  + static text/media
-#  > links and buttons
+#  @ static link
+#  > dynamic links/buttons
 #  = text input fields
 #  $ regular element
 # item modifiers
@@ -159,16 +146,6 @@ EOF
 #  | or 
 
 function stub-file() {
-  #tell "recreating src/routes/+page.svelte"
-  #template "$PROJECT" > $PROJECT/src/routes/+page.svelte
-
-  tell "adding root layout"
-  NAV_URL=$PROJECT/src/routes/+layout.svelte
-  nav > $NAV_URL
-
-  tell "creating components directory"
-  mkdir $PROJECT/src/components
-
   tell "parsing stub file for pages"
   PATH_URL=""
   while read line; do
@@ -215,23 +192,37 @@ function stub-file() {
 }
 
 function stub-template() {
-  tell "creating $1"
   PATH_URL="./$PROJECT/src/$1"
+  # create directory if doesn't exist
   if [ ! -d $(dirname $PATH_URL) ]; then
     mkdir $(dirname $PATH_URL)
   fi
-  template "$1" > $PATH_URL
+  # create file if doesn't exist
+  if [ ! -f $PATH_URL ]; then
+    tell "creating $1"
+    template "$1" > $PATH_URL
+  else
+    fail "file already exists: $PATH_URL"
+    PATH_URL=""
+  fi
 }
 
 function stub-file-create-layout() {
-  stub-template "routes/$(pascalCase "${NEXT_LINE:1}")/+layout.svelte"
+  new_layout_path=$(pascalCase "${NEXT_LINE:1}")
+  if [ -z "$new_layout_path" ]; then
+    stub-template "routes/+layout.svelte"
+    continue
+  fi
+  stub-template "routes/$new_layout_path/+layout.svelte"
 }
 
 function stub-file-create-page() {
-  new_page_name=$(pascalCase "${NEXT_LINE:1}")
-  stub-template "routes/$new_page_name/+page.svelte"
-  # add page to nav in layout
-  sed -i '' "s/\(options = \[.*\)/\1\n\t\t{ name: \"$new_page_name\", href: \"\/$new_page_name\" },/" $NAV_URL
+  new_page_path=$(pascalCase "${NEXT_LINE:1}")
+  if [ -z "$new_page_path" ]; then
+    stub-template "routes/+page.svelte"
+    continue
+  fi
+  stub-template "routes/$(pascalCase "$new_page_path")/+page.svelte"
 }
 
 function stub-file-create-component() {
@@ -262,6 +253,7 @@ function stub-command() {
     =) stub-command-input ;;
     \>) stub-command-link ;;
     \$) stub-command-element ;;
+    \@) stub-command-link-static ;;
     *) fail "unknown command $1" ;;
   esac
 }
@@ -314,8 +306,8 @@ function stub-command-static() {
 # add static component
 function stub-command-element() {
   case $LINE_MOD in
-    \?) fail "not implemented" ;;
-    \<) fail "not implemented" ;;
+    \?) fail "not implemented optional element" ;;
+    \<) fail "not implemented many elements" ;;
     *) insert-content "$(lowercase $LINE_CONTENT)" ;;
   esac
 }
@@ -323,8 +315,15 @@ function stub-command-element() {
 # add controls with variable bind
 function stub-command-input() {
   case $LINE_MOD in
-    \?) fail "not implemented" ;;
-    \<) fail "not implemented" ;;
+    \?)
+      inputOptionVar="is$LINE_CONTENT"
+      inputVar="$(lowercase $LINE_CONTENT)"
+      insert-script "let $inputVar = '$LINE_CONTENT'";
+      insert-script "let $inputOptionVar = true"
+      insert-content "+if('$inputOptionVar')"
+      insert-content "  input(bind:value=\"{$inputVar}\")"
+    ;;
+    \<) fail "not implemented many inputs" ;;
     *)
       inputVar="$(lowercase $LINE_CONTENT)"
       insert-script "let $inputVar = '$LINE_CONTENT'";
@@ -340,7 +339,7 @@ function stub-command-link() {
       linkOptionVar="is$LINE_CONTENT"
       insert-script "let $linkOptionVar = true"
       insert-content "+if('$linkOptionVar')"
-      insert-content "  a(href=\"http://test.url\") $LINE_CONTENT" 
+      insert-content "  a(href=\"/$LINE_CONTENT\") $LINE_CONTENT"
     ;;
     \<)
       linkOptionVar="$(lowercase $LINE_CONTENT)"
@@ -355,6 +354,14 @@ function stub-command-link() {
       insert-content "  a(href=\"/$linkOptionVar\") {$linkOptionsKey}"
     ;;
     *) insert-content "a(href=\"/$LINE_CONTENT\") $LINE_CONTENT" ;;
+  esac
+}
+
+function stub-command-link-static() {
+  case $LINE_MOD in
+    \?) fail "not implemented optional static link" ;;
+    \<) fail "not implemented many static links" ;;
+    *) insert-content "a(href=\"http://sample.url\") $LINE_CONTENT" ;;
   esac
 }
 

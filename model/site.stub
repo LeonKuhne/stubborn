@@ -14,11 +14,9 @@ $ slot
 - availability
 # history
 -< job
-> sitter
 
 /schedule
-# parent and sitter
--< availability
+- schedule
 
 /support
 + SLA
@@ -26,13 +24,76 @@ $ slot
 + email address
 +< FAQ
 
-/signin
-+ TODO copy over notes
+/about
++ company name
++ tagline
++ description
++< usecase
 
-/signup
-> user type
-> email | phone #
-> password 
+/sign in
+= email
+
+/sign up
+- usecase
+- schedule
+- contact
+- payment
+>? hire
+>? request
+
+/sign out
+> home
+
+*account
+- account menu
+$ slot
+
+/account
+- contact
+@ save
+
+/account/payment
+- payment
+@ save
+
+/account/history
+-< job
+
+account menu
+> account
+> account/payment
+> account/history
+
+/hire
++ wait for approval
+- sitter
+
+/request
++ confirmation state
+- job
+@ confirm job
+@ reject job
+
+contact
+= full name
+= email
+= phone number
+=? SSN
+= address
+
+payment
+= credit card
+= venmo
+= paypal
+= bank account
+
+schedule
+# parent and/or sitter
+-< availability
+
+usecase
+= sitter
+= parent
 
 header
 - brand
@@ -46,6 +107,8 @@ brand
 nav
 > schedule
 > support
+> about
+> account
 > sign up | sign in | sign out
 
 sitter
@@ -64,8 +127,10 @@ footer
 
 job
 - parent
+- sitter
 - rating
 + review
++ distance
 - time slot
 
 rating
