@@ -97,15 +97,21 @@ function template() {
 </script>
 
 <template lang="pug">
-.app $1
-  p $2
+.app 
+  .debug $1
 </template>
 
 <style lang="sass">
 .app
+  padding: 10px
+  border: 1px solid grey
   color: red
-  margin: 5px
-  border: 1px solid black
+.debug
+  color: green
+.app > *
+  padding-left: 10px
+  margin: 0
+  display: inline-block
 </style>
 EOF
 }
@@ -128,6 +134,7 @@ function nav() {
 </template>
 
 <style lang="sass">
+
 </style>
 EOF
 }
@@ -150,7 +157,7 @@ EOF
 
 function stub-file() {
   tell "recreating src/routes/+page.svelte"
-  template "Project $PROJECT" "Compiled from $STUB_FILE" > $PROJECT/src/routes/+page.svelte
+  template "$PROJECT" > $PROJECT/src/routes/+page.svelte
 
   tell "adding root layout"
   NAV_URL=$PROJECT/src/routes/+layout.svelte
@@ -205,7 +212,7 @@ function stub-file-create-page() {
   tell "creating page $PATH_URL"
   mkdir $PATH_URL
   # create svelte template
-  template "$new_page_name" "routes/$new_page_name" > "$PATH_URL/+page.svelte"
+  template "routes/$new_page_name" > "$PATH_URL/+page.svelte"
   # add page to nav in layout
   sed -i '' "s/\(options = \[.*\)/\1\n\t\t{ name: \"$new_page_name\", href: \"\/$new_page_name\" },/" $NAV_URL
 }
@@ -217,7 +224,7 @@ function stub-file-create-component() {
   tell "creating component $new_component_name"
   mkdir $PATH_URL
   # create svelte template
-  template "$new_component_name" "components/$new_component_name" > "$PATH_URL/+page.svelte"
+  template "components/$new_component_name" > "$PATH_URL/+page.svelte"
 }
 
 function stub-page-item() {
@@ -231,8 +238,10 @@ function stub-page-item() {
   fi
   LINE_CONTENT=$(pascalCase $content)
 
-  # run the command
-  stub-command $cmd
+  # loop through each pipes
+  for LINE_CONTENT in $(echo $LINE_CONTENT | tr "|" "\n"); do
+    stub-command $cmd
+  done
 }
 
 function stub-command() {
@@ -277,7 +286,7 @@ function stub-command-static() {
       listOptionVar="is$LINE_CONTENT"
       insert-script "let $listOptionVar = true"
       insert-content "+if('$listOptionVar')"
-      insert-content "  p {$listOptionVar}"
+      insert-content "  p $listOptionVar"
     ;;
     \<) 
       listOptionVar="$(lowercase $LINE_CONTENT)"

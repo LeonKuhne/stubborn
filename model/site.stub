@@ -3,6 +3,41 @@
 - sitters
 - footer
 
+/sitter
+- header
+- sitter
+- availability
+# history
+-< job
+- footer
+
+/schedule
+- header
+# parent and sitter
+-< availability
+- footer
+
+/support
+- header
++ SLA
++ phone number
++ email address
++< FAQ
+- footer
+
+/signin
+- header
++ TODO copy over notes
+- footer
+
+/signup
+- header
+> user type
+> full name
+> email | phone #
+> password 
+- footer
+
 header
 - brand
 - nav
@@ -10,6 +45,7 @@ header
 brand
 + name
 + tagline
+> home
 
 nav
 > schedule
@@ -31,14 +67,6 @@ sitter
 footer
 + copyright
 + llc
-
-/sitter
-- header
-- sitter
-- availability
-# history
--< job
-- footer
 
 job
 - parent

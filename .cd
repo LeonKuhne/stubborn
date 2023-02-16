@@ -3,6 +3,10 @@ title "Orlando Babysitters"
 debug "aka. Passive Income"
 help .cd | indent
 
+function frontend() {
+  cc frontend
+}
+
 function model() {
   (cd model; plantuml state.puml)
 }

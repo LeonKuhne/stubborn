@@ -2,67 +2,94 @@
 
 [*] --> signup
 signup --> usecase
-usecase: choose user type
+usecase: add use types
 usecase: babysitter (multiselect)
 usecase: parent (multiselect)
 usecase --> schedule
 schedule: select schedule
 schedule --> details
-details --> background_check
-background_check: verify babysitter information
-background_check: perform background check
-background_check --> add_to_list
-add_to_list: add to approved babysitter list
-add_to_list --> job_request
+' hire sitter
+details --> hire : sitter
+hire: background check sitter 
+hire: add to sitter list
+hire --> [*]
+' request sitter
+details --> request
+request: notify available sitters
+request --> job
+job: parent
+job: distance
+job: time slot
+job: accept (sitter, select)
+job: deny (sitter, select)
+' accept position
+job --> confirmation : sitter 
+confirmation: block out availability (sitter)
+confirmation: address
+confirmation: time slot
+confirmation --> [*]
+' confirm appointment
+job --> appointment : parent
+appointment: charge parent
+appointment: time slot
+appointment: sitter
+appointment --> [*] : parent
+' pay sitter 
+appointment --> payroll : timer
+payroll: pay sitters
+payroll --> fulfilled
+' complete job
+fulfilled --> support
+support: online text chat (sends text)
+support: fill out form (sends email)
+support: text or call <phone #>
+support: email at <email>
+support --> [*]
+' remind sitter
+appointment --> reminder : sitter
+reminder: 1.5 hours before
+reminder: text or call <phone #>
+reminder --> [*]
 
-' request babysitter
-job_request --> job
-job: select time slot
-job: select desired radius
-job --> babysitter_list
-babysitter_list: view available babysitters
-babysitter_list --> select_babysitter
-select_babysitter: select preferred babysitter
-select_babysitter --> job_confirmation
-job_confirmation: review job details
-job_confirmation --> payment
-payment: select payment method
-payment --> payment_verification
-payment_verification: verify payment information
-payment_verification --> job_acceptance
-
-' accept job
-job_acceptance --> block_availability
-block_availability: block out availability for job
-block_availability --> confirmation
-confirmation: confirm job details
-confirmation --> job_completion
-job_completion: complete job
-job_completion --> review
-review: rate and review babysitter
-review --> payment_process
-payment_process: process payment to babysitter
-payment_process --> account_history
-account_history: view payment history and account information
-account_history --> [*]
+state schedule {
+  [*] --> scheduled
+  ' request babysitter
+  [*] --> appointments : parent
+  appointments: for parents (select)
+  appointments --> scheduled
+  ' babysit
+  scheduled --> availability : sitter
+  availability: for sitters (select)
+  availability --> [*]
+  scheduled --> [*]
+}
 
 state details {
-[*] --> account
-account: enter full name (required)
-account --> contact
-contact: enter phone # (required)
-contact: enter email (required)
-contact: enter SSN (babysitter)
-contact --> address
-address: enter street address (required)
-address --> payment
+  [*] --> account
+  details: account
+  account: full name (required)
+  account --> contact
+  contact: phone # (required)
+  contact: email (required)
+  contact: SSN (babysitter)
+  contact --> address
+  address: street (required)
+  address: radius (sitter)
+  address --> payment
+  payment --> confirm
+  confirm: sumarize details
+  confirm --> [*]
 }
 
 state payment {
-[*] --> method
-method: credit card (select)
-method: venmo (select)
-method: paypal (select)
+  [*] --> method
+  method: credit card (select)
+  method: venmo (select)
+  method: paypal (select)
+  method --> verify 
+  verify: verify pay method
+  verify --> [*]
 }
 
 @enduml
+
