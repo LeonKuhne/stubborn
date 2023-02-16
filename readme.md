@@ -10,4 +10,4 @@ Scafold a projects routes and components and stub with basic features.
 - see examples in ./models
 
 ### examples
-![site image](./models/orbb/site.png)
+![site image](./models/orbb/site.stub)
