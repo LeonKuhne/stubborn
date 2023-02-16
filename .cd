@@ -6,10 +6,14 @@ help .cd | indent
 function deploy() {
   rm -rf docs
   cp -r test/build docs
-  git branch -D deploy
-  git branch deploy HEAD
-  FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --subdirectory-filter docs -- deploy
-  git push origin deploy:deploy
+  (
+    cd docs
+    git init .
+    git remote add origin git@github.com:LeonKuhne/stubborn.git
+    git checkout -b deploy
+    git add . && git commit -m "deploying"
+    git push -f origin deploy:deploy
+  )
 }
 
 function stub() {
