@@ -14,7 +14,7 @@ function listen() {
   elif [ ! -f "$file" ]; then
     err "stub file not found: $file"; return
   fi
-  watch -n 1 "source ~/.zshrc; zsh scripts/stub.sh model/$1/site.stub test"
+  watch -n 1 "source ~/.zshrc; . scripts/stub.sh model/$1/site.stub test"
 }
 
 function test() {
