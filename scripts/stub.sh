@@ -57,7 +57,6 @@ function stub-verify () {
   return 0
 }
 
-
 function stub-setup() {
   # skip if project exists
   if [ -d $PROJECT ]; then
@@ -69,9 +68,10 @@ function stub-setup() {
 
   tell "adding preprocess to svelte.config.js"
   sed -i '' "1s/^/import preprocess from 'svelte-preprocess'\n/" $PROJECT/svelte.config.js
-  sed -i '' "s/config = {/config = {\n\tpreprocess: preprocess({\n\
-    \n\
-}),/" $PROJECT/svelte.config.js
+  sed -i '' "s/config = {/config = {\n\tpreprocess: preprocess({}),/" $PROJECT/svelte.config.js
+
+  tell "adding static adapter to svelte.config.js"
+  sed -i '' "s/import adapter from .*/import adapter from '@sveltejs\/adapter-static';/" $PROJECT/svelte.config.js
 
   tell "adding aliases to svelte.config.js"
   sed -i '' "1s/^/import path from 'path'\n/" $PROJECT/svelte.config.js
@@ -83,8 +83,8 @@ function stub-setup() {
   tell "creating components directory"
   mkdir $PROJECT/src/components
 
+  tell "removing default page"
   rm $PROJECT/src/routes/+page.svelte
-
 }
 
 function stub-install() {
@@ -93,6 +93,7 @@ function stub-install() {
     cd $PROJECT;
     npm install --save-dev -y svelte-preprocess pug stylus
     npx -y svelte-add@latest Leftium/pug-adder
+    npm install --save-dev @sveltejs/adapter-static
     npm install
   )
 }
@@ -222,6 +223,8 @@ function stub-file-create-layout() {
   new_layout_path=$(pascalCase "${NEXT_LINE:1}")
   if [ -z "$new_layout_path" ]; then
     stub-template "routes/+layout.svelte"
+    # root layout prerenders
+    insert-script $PATH_URL "export const prerender = true"
     continue
   fi
   stub-template "routes/$new_layout_path/+layout.svelte"
