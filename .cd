@@ -11,21 +11,27 @@ function visit() {
   if [ -z "$1" ]; then
     err "usage: visit <project-dir>"; return
   fi
-  (cd $1; npm run preview -- --open)
+  open $1/build/index.html
 }
 
 function run() {
-  stub "model/$1/site.stub" test
-  visit
+  stub "models/$1/site.stub" $1
+  visit $1
+}
+
+function rerun() {
+  rm -rf $1
+  stub "models/$1/site.stub" $1
+  visit $1
 }
 
 function test() {
-  stub model/orbb/site.stub test
+  stub models/orbb/site.stub test
 }
 
 function retest() {
   rm -rf test
-  stub model/orbb/site.stub test
+  stub models/orbb/site.stub test
 }
 
 function listen() {

@@ -85,6 +85,9 @@ function stub-setup() {
 
   tell "removing default page"
   rm $PROJECT/src/routes/+page.svelte
+
+  tell "adding prerender to root layout"
+  echo "export const prerender = true" >> $PROJECT/src/routes/+layout.js
 }
 
 function stub-install() {
@@ -223,8 +226,6 @@ function stub-file-create-layout() {
   new_layout_path=$(pascalCase "${NEXT_LINE:1}")
   if [ -z "$new_layout_path" ]; then
     stub-template "routes/+layout.svelte"
-    # root layout prerenders
-    insert-script $PATH_URL "export const prerender = true"
     continue
   fi
   stub-template "routes/$new_layout_path/+layout.svelte"
