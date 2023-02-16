@@ -29,8 +29,5 @@ function listen() {
   fi
   #fswatch -o $file -l 1 | run "$1"
   #fswatch -o $file | xargs -n1 -I{} zsh -c '. scripts/stub.sh'
-  fswatch -o models/"$1"/site.stub | xargs -n1 -I{} zsh -c 'source $HOME/.zshrc; if [ -e models/"'$1'"/site.stub ]; then scripts/stub.sh; fi' -- "$1"
-
-
-
+  fswatch -o models/"$1"/site.stub | xargs -n1 -I{} zsh -c '. "$HOME/.zshrc"; if [ -e models/"'$1'"/site.stub ]; then . ./scripts/stub.sh; fi' -- "$1"
 }
