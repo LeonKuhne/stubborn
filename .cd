@@ -1,28 +1,20 @@
 #!/bin/bash
-title "Orlando Babysitters"
-debug "aka. Passive Income"
+title "Website Generator"
+debug "from site maps to websites"
 help .cd | indent
 
-function frontend() {
-  cc frontend
-}
-
 function model() {
-  (cd model; plantuml state.puml)
+  for file in "model/**/*.puml"; do
+    plantuml $file
+  done
+  info "done"
 }
 
 function listen() {
-  (cd model; watch -n 1 plantuml *.puml)
-}
-
-function save() {
-  if [ -z "$1" ]; then
-    err "Usage: save \"did something neat>\""
-    return; 
-  fi
-  git add .
-  git commit -m "\"$@\""
-  git push
+  for file in "model/**/*.puml"; do
+    watch -n 1 plantuml $file
+  done 
+  info "done"
 }
 
 function stub() {
@@ -30,10 +22,10 @@ function stub() {
 }
 
 function test() {
-  stub model/site.stub test
+  stub model/orbb/site.stub test
 }
 
 function retest() {
   rm -rf test
-  stub model/site.stub test
+  stub model/orbb/site.stub test
 }

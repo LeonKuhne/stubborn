@@ -22,7 +22,8 @@ function stub-run() {
 # HELPERS
 
 # use a bullet to indicate the start
-function tell() { info "$1" | indent "${C_CRIT}|$C_RESET " }
+function tell() { info "$1" | indent "${C_TITLE}|$C_RESET " }
+function wiggle() { warn "$1" | indent "${C_CRIT}v$C_RESET " }
 function fail() { err "$1" | indent "${C_ALERT}x$C_RESET " }
 
 function verify() {
@@ -66,7 +67,9 @@ function stub-setup() {
 
   tell "adding preprocess to svelte.config.js"
   sed -i '' "1s/^/import preprocess from 'svelte-preprocess'\n/" $PROJECT/svelte.config.js
-  sed -i '' "s/config = {/config = {\n\tpreprocess: preprocess({}),/" $PROJECT/svelte.config.js
+  sed -i '' "s/config = {/config = {\n\tpreprocess: preprocess({\n\
+    \n\
+}),/" $PROJECT/svelte.config.js
 
   tell "adding aliases to svelte.config.js"
   sed -i '' "1s/^/import path from 'path'\n/" $PROJECT/svelte.config.js
@@ -86,7 +89,7 @@ function stub-install() {
   tell "installing dependencies"
   (
     cd $PROJECT;
-    npm install --save-dev -y svelte-preprocess pug sass
+    npm install --save-dev -y svelte-preprocess pug stylus
     npx -y svelte-add@latest Leftium/pug-adder
     npm install
   )
@@ -110,7 +113,7 @@ function template() {
   .debug $1
 </template>
 
-<style lang="sass">
+<style lang="stylus">
 .app
   padding: 10px
   border: 1px solid grey
@@ -186,7 +189,7 @@ function stub-file() {
     if [ -n "$PATH_URL" ]; then
       stub-page-item 
     else
-      fail "no page context: $PATH_URL $NEXT_LINE"
+      wiggle "no page context: $PATH_URL $NEXT_LINE"
     fi
   done < $STUB_FILE
 }
@@ -197,13 +200,19 @@ function stub-template() {
   if [ ! -d $(dirname $PATH_URL) ]; then
     mkdir $(dirname $PATH_URL)
   fi
-  # create file if doesn't exist
-  if [ ! -f $PATH_URL ]; then
-    tell "creating $1"
-    template "$1" > $PATH_URL
-  else
+  # use existing
+  if [ -f $PATH_URL ]; then
     fail "file already exists: $PATH_URL"
     PATH_URL=""
+  # use mirror 
+  elif [ -f "./lib/$1" ]; then
+    tell "mirroring $1"
+    cat "./lib/$1" > $PATH_URL
+    PATH_URL=""
+  # create file
+  elif [ ! -f $PATH_URL ]; then
+    tell "creating $1"
+    template "$1" > $PATH_URL
   fi
 }
 
