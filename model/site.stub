@@ -1,42 +1,38 @@
-/home
+*
 - header
-- sitters
+$ slot
 - footer
 
+/
+> home 
+
+/home
+-< sitter
+
 /sitter
-- header
 - sitter
 - availability
 # history
 -< job
-- footer
+> sitter
 
 /schedule
-- header
 # parent and sitter
 -< availability
-- footer
 
 /support
-- header
 + SLA
 + phone number
 + email address
 +< FAQ
-- footer
 
 /signin
-- header
 + TODO copy over notes
-- footer
 
 /signup
-- header
 > user type
-> full name
 > email | phone #
 > password 
-- footer
 
 header
 - brand
@@ -52,9 +48,6 @@ nav
 > support
 > sign up | sign in | sign out
 
-sitters
--< sitter
-
 sitter
 + photo
 + name
@@ -63,6 +56,7 @@ sitter
 + total jobs completed
 + total hours worked
 + has availability
+> sitter
 
 footer
 + copyright

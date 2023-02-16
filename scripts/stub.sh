@@ -142,13 +142,16 @@ EOF
 #
 # COMMAND PARSERS
 # 
-# pages
-#  / relative url
+# headers
+#  / page
+#  * layout  
+#  component
 # items
 #  - nested components
 #  + static text/media
 #  > links and buttons
 #  = text input fields
+#  $ regular element
 # item modifiers
 #  < zero or many
 #  ? optional 
@@ -156,8 +159,8 @@ EOF
 #  | or 
 
 function stub-file() {
-  tell "recreating src/routes/+page.svelte"
-  template "$PROJECT" > $PROJECT/src/routes/+page.svelte
+  #tell "recreating src/routes/+page.svelte"
+  #template "$PROJECT" > $PROJECT/src/routes/+page.svelte
 
   tell "adding root layout"
   NAV_URL=$PROJECT/src/routes/+layout.svelte
@@ -190,6 +193,12 @@ function stub-file() {
       continue
     fi
 
+    # parse layouts (start with *)
+    if [[ $NEXT_LINE == \** ]]; then
+      stub-file-create-layout
+      continue
+    fi
+
     # parse components (start with string)
     if [[ $NEXT_LINE == [a-zA-Z]* ]]; then
       stub-file-create-component
@@ -205,26 +214,28 @@ function stub-file() {
   done < $STUB_FILE
 }
 
+function stub-template() {
+  tell "creating $1"
+  PATH_URL="./$PROJECT/src/$1"
+  if [ ! -d $(dirname $PATH_URL) ]; then
+    mkdir $(dirname $PATH_URL)
+  fi
+  template "$1" > $PATH_URL
+}
+
+function stub-file-create-layout() {
+  stub-template "routes/$(pascalCase "${NEXT_LINE:1}")/+layout.svelte"
+}
+
 function stub-file-create-page() {
   new_page_name=$(pascalCase "${NEXT_LINE:1}")
-  PATH_URL=./$PROJECT/src/routes/$new_page_name
-  # create page
-  tell "creating page $PATH_URL"
-  mkdir $PATH_URL
-  # create svelte template
-  template "routes/$new_page_name" > "$PATH_URL/+page.svelte"
+  stub-template "routes/$new_page_name/+page.svelte"
   # add page to nav in layout
   sed -i '' "s/\(options = \[.*\)/\1\n\t\t{ name: \"$new_page_name\", href: \"\/$new_page_name\" },/" $NAV_URL
 }
 
 function stub-file-create-component() {
-  new_component_name=$(pascalCase "$NEXT_LINE")
-  PATH_URL=./$PROJECT/src/components/$new_component_name
-  # create component
-  tell "creating component $new_component_name"
-  mkdir $PATH_URL
-  # create svelte template
-  template "components/$new_component_name" > "$PATH_URL/+page.svelte"
+  stub-template "components/$(pascalCase $NEXT_LINE)/+page.svelte"
 }
 
 function stub-page-item() {
@@ -250,6 +261,7 @@ function stub-command() {
     +) stub-command-static ;;
     =) stub-command-input ;;
     \>) stub-command-link ;;
+    \$) stub-command-element ;;
     *) fail "unknown command $1" ;;
   esac
 }
@@ -299,13 +311,19 @@ function stub-command-static() {
   esac
 }
 
+# add static component
+function stub-command-element() {
+  case $LINE_MOD in
+    \?) fail "not implemented" ;;
+    \<) fail "not implemented" ;;
+    *) insert-content "$(lowercase $LINE_CONTENT)" ;;
+  esac
+}
+
 # add controls with variable bind
 function stub-command-input() {
   case $LINE_MOD in
-    \?)
-      insert-script "let $LINE_CONTENT = '$LINE_CONTENT'";
-      insert-content "input(bind:value=\"{$LINE_CONTENT}\")";
-    ;;
+    \?) fail "not implemented" ;;
     \<) fail "not implemented" ;;
     *)
       inputVar="$(lowercase $LINE_CONTENT)"
@@ -352,13 +370,13 @@ function import-script() {
 # add layout to svelte file
 # 1: content
 function insert-content() {
-  sed -i '' "s!\(</template>\)!  $1\n\1!g" "$PATH_URL/+page.svelte"
+  sed -i '' "s!\(</template>\)!  $1\n\1!g" $PATH_URL
 }
 
 # add script to svelte file
 # 1: content
 function insert-script() {
-  sed -i '' "s!\(</script>\)!  $1\n\1!g" "$PATH_URL/+page.svelte"
+  sed -i '' "s!\(</script>\)!  $1\n\1!g" $PATH_URL
 }
 
 #
