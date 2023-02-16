@@ -11,7 +11,7 @@ function visit() {
   if [ -z "$1" ]; then
     err "usage: visit <project-dir>"; return
   fi
-  (cd $1; npm run preview)
+  (cd $1; npm run preview -- --open)
 }
 
 function run() {
