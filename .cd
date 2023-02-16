@@ -27,8 +27,8 @@ function rerun() {
 
 function test() {
   stub models/orbb/site.stub test
-  rm -rf example
-  cp -r test/build example
+  rm -rf docs
+  cp -r test/build docs
 }
 
 function retest() {
