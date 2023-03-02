@@ -68,7 +68,13 @@ function stub-setup() {
 
   tell "adding preprocess to svelte.config.js"
   sed -i '' "1s/^/import preprocess from 'svelte-preprocess'\n/" $PROJECT/svelte.config.js
-  sed -i '' "s/config = {/config = {\n\tpreprocess: preprocess({}),/" $PROJECT/svelte.config.js
+  sed -i '' """s/config = {/config = {\n\
+  preprocess: preprocess({\n\
+    stylus: {\n\
+      import: \['src\/app.styl'\],\n\
+    },\n\
+  }),/" $PROJECT/svelte.config.js
+  style > $PROJECT/src/app.styl
 
   tell "adding static adapter to svelte.config.js"
   sed -i '' "s/import adapter from .*/import adapter from '@sveltejs\/adapter-static';/" $PROJECT/svelte.config.js
@@ -109,6 +115,13 @@ function stub-build() {
 #
 # STARTER TEMPLATES
 
+function style() {
+  cat << EOF
+body
+  background black
+EOF
+}
+
 function template() {
   cat << EOF
 <script>
@@ -121,15 +134,15 @@ function template() {
 
 <style lang="stylus">
 .app
-  padding: 10px
-  border: 1px solid grey
-  color: red
+  padding 10px
+  border 1px solid grey
+  color red
 .debug
-  color: green
+  color green
 .app > *
-  padding-left: 10px
-  margin: 0
-  display: inline-block
+  padding-left 10px
+  margin 0
+  display inline-block
 </style>
 EOF
 }

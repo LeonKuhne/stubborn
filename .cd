@@ -24,7 +24,8 @@ function visit() {
   if [ -z "$1" ]; then
     err "usage: visit <project-dir>"; return
   fi
-  open $1/build/index.html
+  #open $1/build/index.html
+  (cd $1/build/; python -m http.server 8000)
 }
 
 function run() {
