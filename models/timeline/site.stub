@@ -1,0 +1,39 @@
+# PAGES
+
+/
+- todo
+- labels
+- schedule
+- done
+
+# HIGH LEVEL COMPONENTS
+
+todo
+-< task
+
+labels
+-< tag
+
+schedule
+-< timeline
+
+done
+-< task
+
+# LOW LEVEL COMPONENTS
+
+task
++ title
+- duration
+-< task
+
+tag
++ title
+- duration
+- duration
+
+timeline
+-< task event
+
+duration
+= elapsed
