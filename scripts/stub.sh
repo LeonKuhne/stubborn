@@ -88,10 +88,12 @@ function stub-setup() {
   sed -i '' "s!kit: {!kit: {\n\
     alias: {\n\
       \$components: path.resolve('/src/components'),\n\
+      \$models: path.resolve('/src/model'),\n\
     },!" $PROJECT/svelte.config.js
 
   tell "creating components directory"
   mkdir $PROJECT/src/components
+  mkdir $PROJECT/src/models
 
   tell "removing default page"
   rm $PROJECT/src/routes/+page.svelte
@@ -150,9 +152,10 @@ EOF
 # COMMAND PARSERS
 # 
 # headers
+#  component
 #  / page
 #  * layout  
-#  component
+#  . script
 # items
 #  - nested components
 #  + static text/media
@@ -160,6 +163,7 @@ EOF
 #  > dynamic links/buttons
 #  = text input fields
 #  $ regular element
+#  ! model reference
 # item modifiers
 #  < zero or many
 #  ? optional 
@@ -203,6 +207,12 @@ function stub-file() {
       continue
     fi
 
+    # parse script
+    if [[ $NEXT_LINE == \.* ]]; then
+      stub-file-create-script
+      continue
+    fi
+
     # verify path set
     if [ -n "$PATH_URL" ]; then
       stub-page-item 
@@ -234,6 +244,10 @@ function stub-template() {
   fi
 }
 
+function stub-script() {
+  export const model = {}
+}
+
 function stub-file-create-layout() {
   new_layout_path=$(pascalCase "${NEXT_LINE:1}")
   if [ -z "$new_layout_path" ]; then
@@ -254,6 +268,10 @@ function stub-file-create-page() {
 
 function stub-file-create-component() {
   stub-template "components/$(pascalCase "$NEXT_LINE")/+page.svelte"
+}
+
+function stub-file-create-script() {
+  stub-script "models/$(pascalCase "$NEXT_LINE")/script.js"
 }
 
 function stub-page-item() {
@@ -281,6 +299,7 @@ function stub-command() {
     \>) stub-command-link ;;
     \$) stub-command-element ;;
     \@) stub-command-link-static ;;
+    #\!) stub-command-script ;;
     *) fail "unknown command $1" ;;
   esac
 }
@@ -395,6 +414,14 @@ function stub-command-link-static() {
     \?) fail "not implemented optional static link" ;;
     \<) fail "not implemented many static links" ;;
     *) insert-content "a(href=\"http://sample.url\") $LINE_CONTENT" ;;
+  esac
+}
+
+function stub-command-script() {
+  case $LINE_MOD in
+    \?) fail "not implemented optional script" ;;
+    \<) fail "not implemented many scripts" ;;
+    *) echo "import ${LINE_CONTENT}Model from '\$models/$LINE_CONTENT'" >> $PATH_URL ;;
   esac
 }
 

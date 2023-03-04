@@ -1,3 +1,7 @@
+# MODELS
+
+.task
+
 # PAGES
 
 /
@@ -10,6 +14,7 @@
 
 todo
 -< task
+! task
 
 labels
 -< tag
@@ -19,6 +24,7 @@ schedule
 
 done
 -< task
+! task
 
 # LOW LEVEL COMPONENTS
 
