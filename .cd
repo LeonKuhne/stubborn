@@ -1,7 +1,47 @@
 #!/bin/bash
-title "stubborn"
-debug "website generator"
-help .cd | indent
+title -n "stubborn"; debug " website generator"
+help .cd | indent "> "
+echo
+
+notice "projects"
+ls -1 models | indent 
+echo
+
+function dev() {
+  if [ -z "$1" ]; then
+    err "usage: dev <project name>"; return
+  fi
+  (cd $1; npm run dev)
+}
+
+function stub() {
+  . scripts/stub.sh
+}
+
+function prod() {
+  if [ -z "$1" ]; then
+    err "usage: build <project name>"; return
+  fi
+  (cd $1; npm run build)
+  (cd $1/build/; python -m http.server 8000)
+}
+
+function run() {
+  if [ -z "$1" ]; then
+    err "usage: run <project name>"; return
+  fi
+  stub "models/$1/site.stub" $1
+  dev $1
+}
+
+function rerun() {
+  if [ -z "$1" ]; then
+    err "usage: rerun <project name>"; return
+  fi
+  rm -rf $1
+  stub "models/$1/site.stub" $1
+  dev $1
+}
 
 function deploy() {
   rm -rf docs
@@ -14,29 +54,6 @@ function deploy() {
     git add . && git commit -m "deploying"
     git push -f origin deploy:deploy
   )
-}
-
-function stub() {
-  . scripts/stub.sh
-}
-
-function visit() {
-  if [ -z "$1" ]; then
-    err "usage: visit <project-dir>"; return
-  fi
-  #open $1/build/index.html
-  (cd $1/build/; python -m http.server 8000)
-}
-
-function run() {
-  stub "models/$1/site.stub" $1
-  visit $1
-}
-
-function rerun() {
-  rm -rf $1
-  stub "models/$1/site.stub" $1
-  visit $1
 }
 
 function test() {
@@ -58,7 +75,6 @@ function listen() {
   fi
   loop ./scripts/stub.sh "$file" "$file" "$1"
 }
-
 
 function relisten() {
   file="models/$1/site.stub"

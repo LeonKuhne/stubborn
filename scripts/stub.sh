@@ -15,7 +15,6 @@ function stub-run() {
   stub-setup
   stub-file
   stub-install
-  stub-build
 
   notice "done!"
 }
@@ -41,7 +40,7 @@ function pascalCase() {
 }
 
 function lowercase() {
-  echo "$(tr '[:upper:]' '[:lower:]' <<< "${1:0:1}")${1:1}"
+  echo "$(tr '[:upper:]' '[:lower:]' <<< "${1:0:1}")${1:1}" | sed 's/[ :]/_/g'
 }
 
 #
@@ -71,10 +70,15 @@ function stub-setup() {
   sed -i '' """s/config = {/config = {\n\
   preprocess: preprocess({\n\
     stylus: {\n\
-      import: \['src\/app.styl'\],\n\
+      prependData: \`@import 'src\/app.styl'\`,\n\
     },\n\
   }),/" $PROJECT/svelte.config.js
-  style > $PROJECT/src/app.styl
+
+  # copy base lib styl/html
+  if [ -f ./lib/app.styl ]; then cp ./lib/app.styl $PROJECT/src/app.styl
+  else style > $PROJECT/src/app.styl; fi
+  if [ -f ./lib/app.html ]; then cp ./lib/app.html $PROJECT/src/app.html; fi
+
 
   tell "adding static adapter to svelte.config.js"
   sed -i '' "s/import adapter from .*/import adapter from '@sveltejs\/adapter-static';/" $PROJECT/svelte.config.js
@@ -107,17 +111,12 @@ function stub-install() {
   )
 }
 
-function stub-build() {
-  tell "building the app"
-  (cd $PROJECT; npm run build)
-}
-
 #
 # STARTER TEMPLATES
 
 function style() {
   cat << EOF
-body
+.app
   background black
 EOF
 }
@@ -254,7 +253,7 @@ function stub-file-create-page() {
 }
 
 function stub-file-create-component() {
-  stub-template "components/$(pascalCase $NEXT_LINE)/+page.svelte"
+  stub-template "components/$(pascalCase "$NEXT_LINE")/+page.svelte"
 }
 
 function stub-page-item() {
@@ -335,7 +334,13 @@ function stub-command-static() {
 function stub-command-element() {
   case $LINE_MOD in
     \?) fail "not implemented optional element" ;;
-    \<) fail "not implemented many elements" ;;
+    \<)
+      listOptionVar="$(lowercase $LINE_CONTENT)"
+      listOptionsVar="${listOptionVar}s"
+      insert-script "let $listOptionsVar = ['one', 'two', 'three']"
+      insert-content "+each('$listOptionsVar as $listOptionVar')"
+      insert-content "  $(lowercase $LINE_CONTENT) {$listOptionVar}"
+    ;;
     *) insert-content "$(lowercase $LINE_CONTENT)" ;;
   esac
 }

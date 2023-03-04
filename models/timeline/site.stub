@@ -25,12 +25,14 @@ done
 task
 + title
 - duration
--< task
+$< svelte:self
 
 tag
 + title
 - duration
-- duration
+
+task event
++ title
 
 timeline
 -< task event
