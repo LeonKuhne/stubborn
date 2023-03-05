@@ -27,6 +27,7 @@
 </script>
 
 <template lang="pug">
+h2 Todo
 div
   +each('tasks as task')
     Task(task='{task}')

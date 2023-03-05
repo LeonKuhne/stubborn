@@ -41,6 +41,7 @@
   display inline-block
   cursor pointer
   margin-right .5rem
+  font-family monospace
 .subtask
   margin-left .5rem
 .title
