@@ -88,7 +88,7 @@ function stub-setup() {
   sed -i '' "s!kit: {!kit: {\n\
     alias: {\n\
       \$components: path.resolve('/src/components'),\n\
-      \$models: path.resolve('/src/model'),\n\
+      \$models: path.resolve('/src/models'),\n\
     },!" $PROJECT/svelte.config.js
 
   tell "creating components directory"
@@ -147,6 +147,14 @@ function template() {
 </style>
 EOF
 }
+
+function stub-script() {
+  tell "creating $1"
+  cat << EOF
+export const model = {}
+EOF
+}
+
 
 #
 # COMMAND PARSERS
@@ -244,10 +252,6 @@ function stub-template() {
   fi
 }
 
-function stub-script() {
-  export const model = {}
-}
-
 function stub-file-create-layout() {
   new_layout_path=$(pascalCase "${NEXT_LINE:1}")
   if [ -z "$new_layout_path" ]; then
@@ -299,7 +303,7 @@ function stub-command() {
     \>) stub-command-link ;;
     \$) stub-command-element ;;
     \@) stub-command-link-static ;;
-    #\!) stub-command-script ;;
+    \!) stub-command-script ;;
     *) fail "unknown command $1" ;;
   esac
 }
@@ -358,9 +362,9 @@ function stub-command-element() {
       listOptionsVar="${listOptionVar}s"
       insert-script "let $listOptionsVar = ['one', 'two', 'three']"
       insert-content "+each('$listOptionsVar as $listOptionVar')"
-      insert-content "  $(lowercase $LINE_CONTENT) {$listOptionVar}"
+      insert-content "  $LINE_CONTENT {$listOptionVar}"
     ;;
-    *) insert-content "$(lowercase $LINE_CONTENT)" ;;
+    *) insert-content "$LINE_CONTENT" ;;
   esac
 }
 
