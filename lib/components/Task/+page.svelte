@@ -21,25 +21,39 @@
 +if('task')
   .task
     +if('task.children.length')
-      button.expand('on:click={() => open = !open}') {open ? 'v' : '>'}
-      +else()
-        button.add('on:click={addTask}') +
-    span {task.title}
-    Duration(value='{task.duration}')
-    +if('open')
-      +key('updates')
-        +each('task.children as subtask')
-          .subtask
-            svelte:self(task='{subtask}')
+      button.item('on:click={() => open = !open}') {open ? 'v' : '>'}
+    .title {task.title}
+    .right
+      button.item('on:click={addTask}') +
+      Duration(value='{task.duration}')
+  +if('open')
+    +key('updates')
+      +each('task.children as subtask')
+        .subtask
+          svelte:self(task='{subtask}')
 </template>
 
 <style lang="stylus">
 .task
   width 100%
-.add, .expand
+  display flex
+.item
   display inline-block
   cursor pointer
   margin-right .5rem
 .subtask
   margin-left .5rem
+.title
+  display inline-block
+  flex 1
+  margin-top .25rem
+.right
+  display inline-block
+  max-width fit-content
+button
+  border none
+  outline none
+  cursor pointer
+  color white
+  background transparent
 </style>
