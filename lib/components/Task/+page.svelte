@@ -1,6 +1,6 @@
 <script>
   import Duration from '$components/Duration/+page.svelte'
-  import Model from '$models/Task/script.js'
+  import TaskModel from '$models/Task/script.js'
   export let task = null
   let open = false
 
@@ -21,9 +21,9 @@
 +if('task')
   .task
     +if('task.children.length')
-      .expand('on:click={() => open = !open}') {open ? 'v' : '>'}
+      button.expand('on:click={() => open = !open}') {open ? 'v' : '>'}
       +else()
-        .add('on:click={addTask}') +
+        button.add('on:click={addTask}') +
     span {task.title}
     Duration(value='{task.duration}')
     +if('open')

@@ -148,13 +148,13 @@ function template() {
 EOF
 }
 
-function stub-script() {
-  tell "creating $1"
+function model() {
   cat << EOF
-export const model = {}
+export default {
+  // add your model here
+}
 EOF
 }
-
 
 #
 # COMMAND PARSERS
@@ -252,6 +252,28 @@ function stub-template() {
   fi
 }
 
+function stub-model() {
+  PATH_URL="./$PROJECT/src/$1"
+  # create directory if doesn't exist
+  if [ ! -d $(dirname $PATH_URL) ]; then
+    mkdir $(dirname $PATH_URL)
+  fi
+  # use existing
+  if [ -f $PATH_URL ]; then
+    fail "file already exists: $PATH_URL"
+    PATH_URL=""
+  # use mirror 
+  elif [ -f "./lib/$1" ]; then
+    tell "mirroring $1"
+    cat "./lib/$1" > $PATH_URL
+    PATH_URL=""
+  # create file
+  elif [ ! -f $PATH_URL ]; then
+    tell "creating script $1"
+    model > $PATH_URL
+  fi
+}
+
 function stub-file-create-layout() {
   new_layout_path=$(pascalCase "${NEXT_LINE:1}")
   if [ -z "$new_layout_path" ]; then
@@ -275,7 +297,7 @@ function stub-file-create-component() {
 }
 
 function stub-file-create-script() {
-  stub-script "models/$(pascalCase "$NEXT_LINE")/script.js"
+  stub-model "models/$(pascalCase "${NEXT_LINE:1}")/script.js"
 }
 
 function stub-page-item() {
@@ -425,7 +447,7 @@ function stub-command-script() {
   case $LINE_MOD in
     \?) fail "not implemented optional script" ;;
     \<) fail "not implemented many scripts" ;;
-    *) echo "import ${LINE_CONTENT}Model from '\$models/$LINE_CONTENT'" >> $PATH_URL ;;
+    *) insert-script "import ${LINE_CONTENT}Model from '\$models/$LINE_CONTENT/script.js'"
   esac
 }
 
